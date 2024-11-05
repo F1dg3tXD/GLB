@@ -1,697 +1,229 @@
 <html>
-    <head>
-        <base href="." target="_blank">
-        <title>GLB</title>
-        <link rel="icon" type="image/x-icon" href="img/favicon.png">
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <style>
-            body { 
-    margin: 0; 
-    padding: 0; 
-    overflow: hidden; 
-    font-family: Arial, sans-serif; 
-    background: transparent; 
-    color: #fff; 
-}
-#background {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    background-image: url('img/background.png');
-    background-size: auto;  /* Changed from cover to auto to enable tiling */
-    background-position: center;
-    background-repeat: repeat;  /* Changed from no-repeat to repeat */
-    opacity: 1; 
-}
-#canvas { width: 100%; height: 100%; }
-#controls { 
-    position: absolute; 
-    top: 10px; 
-    left: 10px; 
-    background: rgba(0,0,0,0.7); 
-    padding: 10px; 
-    border-radius: 5px; 
-    z-index: 10; 
-}
-#controls button, #file-label { margin: 5px; padding: 5px 10px; background: #ff4411; color: white; border: none; border-radius: 3px; cursor: pointer; }
-#controls button:hover, #file-label:hover { background: #e63d0f; }
-#file-input { display: none; }
-#info-panel { 
-    position: absolute; 
-    top: 10px; 
-    right: 10px; 
-    background: rgba(0,0,0,0.7); 
-    padding: 10px; 
-    border-radius: 5px; 
-    max-width: 300px; 
-    max-height: 80%; 
-    overflow-y: auto; 
-    z-index: 10; 
-}
-#model-list { 
-    position: absolute; 
-    bottom: 10px; 
-    left: 10px; 
-    background: rgba(0,0,0,0.7); 
-    padding: 10px; 
-    border-radius: 5px; 
-    max-width: 300px; 
-    z-index: 10; 
-}
-#model-list select { width: 100%; margin-top: 5px; }
-#animation-controls {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background: rgba(0,0,0,0.8);
-    padding: 15px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    z-index: 10;
-}
 
-#timeline {
-    flex-grow: 1;
-    margin: 0 10px;
-    height: 20px;
-    cursor: pointer;
-    -webkit-appearance: none;
-    appearance: none;
-    background: rgba(255,255,255,0.1);
-    border-radius: 10px;
-    outline: none;
-    transition: background 0.3s;
-}
+<head>
+  <base href="/">
+  <title>GLB</title>
+  <link rel="icon" type="image/x-icon" href="img/favicon.png">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #2e2e2e;
+      color: #ffffff;
+    }
 
-#timeline:hover {
-    background: rgba(255,255,255,0.2);
-}
+    .header {
+      background: #ff4411;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-#timeline::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    background: #ff4411;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 5px rgba(0,0,0,0.5);
-    transition: all 0.3s;
-}
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin-right: 1rem;
+    }
 
-#timeline::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: #ff4411;
-    border-radius: 50%;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 0 5px rgba(0,0,0,0.5);
-    transition: all 0.3s;
-}
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
 
-#timeline::-webkit-slider-thumb:hover {
-    transform: scale(1.2);
-    background: #e63d0f;
-}
+    .viewer-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      margin: 3rem 0;
+    }
 
-#timeline::-moz-range-thumb:hover {
-    transform: scale(1.2);
-    background: #e63d0f;
-}
+    .viewer-container {
+      width: 600px;
+      height: 600px;
+      background: #3a3a3a;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
 
-#animation-controls button {
-    min-width: 80px;
-    height: 30px;
-    margin: 0;
-    padding: 5px 15px;
-    background: #ff4411;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 12px;
-    transition: background 0.3s;
-}
+    .cta-button {
+      background: #ff4411;
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 4px;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
 
-#animation-controls button:hover {
-    background: #e63d0f;
-}
+    .cta-button:hover {
+      background: #ee3300;
+    }
 
-#time-display {
-    min-width: 120px;
-    text-align: right;
-    font-family: monospace;
-    font-size: 14px;
-    color: #ff4411;
-    background: rgba(0,0,0,0.5);
-    padding: 5px 10px;
-    border-radius: 3px;
-    margin-left: auto;
-}
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+      margin: 3rem 0;
+    }
 
-.embed-dialog {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0,0,0,0.95);
-    padding: 20px;
-    border-radius: 5px;
-    z-index: 1000;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    display: none;
-}
+    .feature-card {
+      background: #3a3a3a;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
 
-.embed-dialog textarea {
-    width: 100%;
-    min-width: 300px;
-    height: 100px;
-    margin: 10px 0;
-    padding: 10px;
-    background: rgba(255,255,255,0.1);
-    color: #fff;
-    border: 1px solid #ff4411;
-    border-radius: 3px;
-}
+    .url-example {
+      background: #3a3a3a;
+      padding: 1rem;
+      border-radius: 4px;
+      font-family: monospace;
+      margin: 1rem 0;
+    }
 
-.embed-dialog .close-btn {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: none;
-    border: none;
-    color: #ff4411;
-    cursor: pointer;
-    font-size: 20px;
-}
-</style>
+    code {
+      color: #ff4411;
+    }
+
+    .social-buttons {
+      position: fixed;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      z-index: 100;
+    }
+
+    .social-button {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      text-decoration: none;
+      color: white;
+      background: #3a3a3a;
+      padding: 0.5rem;
+      border-radius: 50px;
+      transition: all 0.3s ease;
+      overflow: hidden;
+      width: 40px;
+      margin-left: auto;
+    }
+
+    .social-button:hover {
+      width: 160px;
+      background: #ff4411;
+    }
+
+    .social-button svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+      flex-shrink: 0;
+      order: 2;
+    }
+
+    .social-button .username {
+      margin-right: 0.8rem;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      order: 1;
+    }
+
+    .social-button:hover .username {
+      opacity: 1;
+    }
+  </style>
 </head>
 
 <body>
-    <div id="background"></div>
-    <div id="controls">
-        <label id="file-label" for="file-input">Load GLB/GLTF</label>
-        <input type="file" id="file-input" accept=".glb,.gltf">
-        <button id="wireframe-btn">Toggle Wireframe</button>
-        <button id="bones-btn">Toggle Bones</button>
-        <button id="shaders-btn">Cycle Shaders</button>
-        <button id="lights-btn">Toggle Lights</button>
-        <button id="embed-btn">Get Embed Code</button>
+  <header class="header">
+    <img src="img/favicon.png" alt="GLB Logo - 3D cube with colorful sides" class="logo">
+    <h1 style="color: white;">GLB</h1>
+  </header>
+
+  <div class="social-buttons">
+    <a href="https://github.com/F1dg3tXD" target="_blank" rel="noopener noreferrer" class="social-button github-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path
+          d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
+      </svg>
+      <span class="username">F1dg3tXD</span>
+    </a>
+
+    <a href="https://x.com/f1dg3t_dev" target="_blank" rel="noopener noreferrer" class="social-button twitter-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path
+          d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+      </svg>
+      <span class="username">f1dg3t_dev</span>
+    </a>
+
+    <a href="https://www.tiktok.com/@the_real_f1dg3t" target="_blank" rel="noopener noreferrer"
+      class="social-button tiktok-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path
+          d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z" />
+      </svg>
+      <span class="username">the_real_f1dg3t</span>
+    </a>
+
+    <a href="https://www.youtube.com/@F1dg3t" target="_blank" rel="noopener noreferrer"
+      class="social-button youtube-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path
+          d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+      </svg>
+      <span class="username">F1dg3t</span>
+    </a>
+  </div>
+
+  <div class="container">
+    <h2>Free 3D Model Viewing & Embedding Platform</h2>
+    <p>Share your 3D creations with the world using our powerful, easy-to-use model viewer. Perfect for artists,
+      designers, and creators looking to showcase their work.</p>
+
+    <div class="viewer-section">
+      <a href="viewer.html"><button class="cta-button">Launch 3D Viewer</button></a>
+      <div class="viewer-container">
+        <iframe
+          src="http://127.0.0.1:5500/viewer.html?source=mdl%2Ffavicon.glb&show_UI=false&lights=true&sceneLights=false&animation=0"
+          style="width: 100%; height: 600px; border: none;" allowfullscreen>
+        </iframe>
+        <p style="text-align: center; padding-top: 280px; color: #ffffff;">3D Viewer Preview</p>
+      </div>
     </div>
-    <div id="info-panel">
-        <h3>Model Info</h3>
-        <div id="animations-list"></div>
-        <div id="materials-list"></div>
+
+    <div class="features">
+      <div class="feature-card">
+        <h3>GLB & GLTF Support</h3>
+        <p>Specialized viewer built specifically for GLB and GLTF formats, ensuring optimal performance and
+          compatibility.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Direct URL Loading</h3>
+        <p>Load models directly via URL using our simple query parameter:</p>
+        <div class="url-example">
+          <code>viewer.html?source=your-model-url.glb</code>
+        </div>
+      </div>
+      <div class="feature-card">
+        <h3>Easy Embedding</h3>
+        <p>Simple copy-paste embed codes to integrate your GLB/GLTF models into any website or portfolio.</p>
+      </div>
     </div>
-    <div id="model-list"></div>
-    <div id="animation-controls">
-        <button id="play-pause-btn">Play</button>
-        <input type="range" id="timeline" min="0" max="100" value="0" step="0.1">
-        <span id="time-display">0.00 / 0.00</span>
-    </div>
-    <div class="embed-dialog" id="embed-dialog">
-        <button class="close-btn" id="close-embed-dialog">×</button>
-        <h3>Embed Code</h3>
-        <p>Copy and paste this code into your website:</p>
-        <textarea id="embed-code" readonly></textarea>
-    </div>
-    <canvas id="canvas"></canvas>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script>
-        let scene, camera, renderer, controls, mixer, clock;
-        let model, wireframeHelper, skeletonHelper;
-        async function fetchDirectoryListing(url) {
-            try {
-                // Convert GitHub tree URLs to API URLs
-                if (url.includes('github.com') && url.includes('/tree/')) {
-                    // Transform GitHub URL to API URL
-                    const apiUrl = url.replace('github.com', 'api.github.com/repos')
-                        .replace('/tree/', '/contents/');
-
-                    const response = await fetch(apiUrl);
-                    const data = await response.json();
-
-                    return data
-                        .filter(file => file.name.toLowerCase().endsWith('.glb') ||
-                            file.name.toLowerCase().endsWith('.gltf'))
-                        .map(file => ({
-                            name: file.name,
-                            url: file.download_url
-                        }));
-                }
-
-                // Original directory listing logic
-                const response = await fetch(url);
-                const text = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, 'text/html');
-                const links = Array.from(doc.querySelectorAll('a'));
-                return links
-                    .map(link => link.href)
-                    .filter(href => href.toLowerCase().endsWith('.glb') ||
-                        href.toLowerCase().endsWith('.gltf'))
-                    .map(href => {
-                        const url = new URL(href);
-                        return {
-                            name: url.pathname.split('/').pop(),
-                            url: href
-                        };
-                    });
-            } catch (error) {
-                console.error('Error fetching directory:', error);
-                return [];
-            }
-        }
-        function checkAndFixUrl() {
-            const path = window.location.pathname;
-            if (path.match(/^\/https?:\/\//)) {
-                const correctedUrl = window.location.origin +
-                    '/?source=' +
-                    path.substring(1);
-                window.location.href = correctedUrl;
-                return true;
-            }
-            return false;
-        }
-        let animations = [], materials = [];
-        let currentShaderMode = 0;
-        const shaderModes = ['Standard', 'Toon', 'Basic'];
-        const defaultModelUrl = '';
-        let currentAnimation = null;
-        let isPlaying = false;
-
-        async function checkUrlParameters() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const modelSource = urlParams.get('source');
-
-            if (modelSource) {
-                let modelUrl = modelSource;
-
-                // Check if it's a GitHub URL
-                if (modelUrl.includes('github.com')) {
-                    if (modelUrl.includes('/tree/')) {
-                        // It's a directory
-                        const models = await fetchDirectoryListing(modelUrl);
-                        if (models.length > 0) {
-                            displayModelList(models);
-                            return true;
-                        }
-                    } else if (modelUrl.includes('/blob/')) {
-                        // It's a single file
-                        modelUrl = modelUrl.replace('github.com', 'raw.githubusercontent.com')
-                            .replace('/blob/', '/');
-                    }
-                }
-
-                // Handle any direct URL (not just GitHub)
-                if (!modelUrl.startsWith('http://') && !modelUrl.startsWith('https://')) {
-                    modelUrl = new URL(modelUrl, window.location.href).href;
-                }
-
-                // Check if it's a directory
-                if (!modelUrl.toLowerCase().endsWith('.glb') &&
-                    !modelUrl.toLowerCase().endsWith('.gltf')) {
-                    const models = await fetchDirectoryListing(modelUrl);
-                    if (models.length > 0) {
-                        displayModelList(models);
-                        return true;
-                    }
-                }
-
-                // Load single model
-                console.log(`Loading model from URL parameter: ${modelUrl}`);
-                loadModel(modelUrl);
-                document.getElementById('file-label').style.display = 'none';
-                document.getElementById('file-input').disabled = true;
-                document.getElementById('model-list').style.display = 'none';
-                return true;
-            }
-
-            return false;
-        }
-
-        function displayModelList(models) {
-            const modelList = document.getElementById('model-list');
-            modelList.innerHTML = '<h4>Available Models:</h4>';
-
-            const select = document.createElement('select');
-            select.innerHTML = '<option value="">Select a model</option>';
-
-            models.forEach((model) => {
-                const option = document.createElement('option');
-                option.value = model.url;
-                option.textContent = model.name;
-                select.appendChild(option);
-            });
-
-            select.addEventListener('change', (e) => {
-                if (e.target.value) {
-                    loadModel(e.target.value);
-                }
-            });
-
-            modelList.appendChild(select);
-            modelList.style.display = 'block';
-        }
-
-        async function init() {
-            if (checkAndFixUrl()) return;
-
-            scene = new THREE.Scene();
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({
-                canvas: document.getElementById('canvas'),
-                antialias: true,
-                alpha: true  // Enable transparency
-            });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setClearColor(0x000000, 0); // Make renderer background transparent
-
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            clock = new THREE.Clock();
-
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-            scene.add(ambientLight);
-
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-            directionalLight.position.set(0, 1, 0);
-            scene.add(directionalLight);
-
-            camera.position.z = 5;
-
-            window.addEventListener('resize', onWindowResize, false);
-
-            const hasUrlModel = await checkUrlParameters();
-            if (!hasUrlModel) {
-                document.getElementById('file-label').style.display = 'inline-block';
-                document.getElementById('file-input').disabled = false;
-            }
-        }
-
-        function onWindowResize() {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        function loadModel(url) {
-            const loader = new THREE.GLTFLoader();
-            loader.load(url, (gltf) => {
-                if (model) scene.remove(model);
-                if (wireframeHelper) scene.remove(wireframeHelper);
-                if (skeletonHelper) scene.remove(skeletonHelper);
-
-                model = gltf.scene;
-                scene.add(model);
-
-                animations = gltf.animations;
-                updateAnimationsList();
-
-                materials = [];
-                model.traverse((child) => {
-                    if (child.isMesh && child.material) {
-                        materials.push(child.material);
-                    }
-                });
-                updateMaterialsList();
-
-                if (animations.length) {
-                    mixer = new THREE.AnimationMixer(model);
-                }
-
-                let meshForWireframe;
-                model.traverse((child) => {
-                    if (child.isMesh && !meshForWireframe) {
-                        meshForWireframe = child;
-                    }
-                });
-
-                if (meshForWireframe) {
-                    const wireframeGeometry = new THREE.WireframeGeometry(meshForWireframe.geometry);
-                    const wireframeMaterial = new THREE.LineBasicMaterial({
-                        color: 0xffffff,
-                        depthTest: false
-                    });
-                    wireframeHelper = new THREE.LineSegments(wireframeGeometry, wireframeMaterial);
-                    wireframeHelper.visible = false;
-                    model.add(wireframeHelper);
-                }
-
-                skeletonHelper = new THREE.SkeletonHelper(model);
-                skeletonHelper.visible = false;
-                scene.add(skeletonHelper);
-
-                const box = new THREE.Box3().setFromObject(model);
-                const center = box.getCenter(new THREE.Vector3());
-                const size = box.getSize(new THREE.Vector3());
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const scale = 5 / maxDim;
-
-                model.scale.setScalar(scale);
-                model.position.sub(center.multiplyScalar(scale));
-
-                const fov = camera.fov * (Math.PI / 180);
-                const distance = Math.abs(maxDim / Math.sin(fov / 2)) * 1.5;
-
-                camera.position.set(0, 0, distance);
-                camera.lookAt(new THREE.Vector3(0, 0, 0));
-
-                controls.target.copy(new THREE.Vector3(0, 0, 0));
-                controls.maxDistance = distance * 3;
-                controls.minDistance = distance * 0.1;
-                controls.update();
-
-                camera.lookAt(model.position);
-            }, undefined, function (error) {
-                console.error(error);
-            });
-        }
-
-        function updateAnimationsList() {
-            const animationsList = document.getElementById('animations-list');
-            animationsList.innerHTML = '<h4>Animations:</h4>';
-            if (animations.length === 0) {
-                animationsList.innerHTML += '<p>No animations found</p>';
-            } else {
-                const select = document.createElement('select');
-                select.innerHTML = '<option value="">Select Animation</option>';
-                animations.forEach((anim, index) => {
-                    const option = document.createElement('option');
-                    option.value = index;
-                    option.textContent = anim.name || `Animation ${index + 1}`;
-                    select.appendChild(option);
-                });
-                select.addEventListener('change', (e) => {
-                    if (e.target.value !== '') {
-                        playAnimation(parseInt(e.target.value));
-                    }
-                });
-                animationsList.appendChild(select);
-            }
-        }
-
-        function updateMaterialsList() {
-            const materialsList = document.getElementById('materials-list');
-            materialsList.innerHTML = '<h4>Materials:</h4>';
-            if (materials.length === 0) {
-                materialsList.innerHTML += '<p>No materials found</p>';
-            } else {
-                const ul = document.createElement('ul');
-                materials.forEach((material, index) => {
-                    const li = document.createElement('li');
-                    li.textContent = `Material ${index + 1}: ${material.type}`;
-                    ul.appendChild(li);
-                });
-                materialsList.appendChild(ul);
-            }
-        }
-
-        function playAnimation(index) {
-            if (mixer) {
-                mixer.stopAllAction();
-                currentAnimation = mixer.clipAction(animations[index]);
-                currentAnimation.play();
-                isPlaying = true;
-                document.getElementById('play-pause-btn').textContent = 'Pause';
-
-                const timeline = document.getElementById('timeline');
-                timeline.value = 0;
-
-                const duration = animations[index].duration;
-                document.getElementById('time-display').textContent =
-                    `0.00 / ${duration.toFixed(2)}`;
-
-                mixer.setTime(0);
-            }
-        }
-
-        function togglePlayPause() {
-            if (!currentAnimation) return;
-
-            isPlaying = !isPlaying;
-            if (isPlaying) {
-                currentAnimation.paused = false;
-                document.getElementById('play-pause-btn').textContent = 'Pause';
-            } else {
-                currentAnimation.paused = true;
-                document.getElementById('play-pause-btn').textContent = 'Play';
-            }
-        }
-
-        function updateTimeline() {
-            if (!currentAnimation || !mixer) return;
-
-            const action = currentAnimation;
-            const duration = action._clip.duration;
-            const time = mixer.time;
-
-            const timeline = document.getElementById('timeline');
-            timeline.value = (time % duration) / duration * 100;
-            document.getElementById('time-display').textContent =
-                `${(time % duration).toFixed(2)} / ${duration.toFixed(2)}`;
-        }
-
-        function toggleWireframe() {
-            if (wireframeHelper) {
-                wireframeHelper.visible = !wireframeHelper.visible;
-            }
-        }
-
-        function toggleBones() {
-            if (skeletonHelper) {
-                skeletonHelper.visible = !skeletonHelper.visible;
-            }
-        }
-
-        function cycleShaders() {
-            if (!model) return;
-            currentShaderMode = (currentShaderMode + 1) % shaderModes.length;
-
-            if (!model.userData.originalMaterials) {
-                model.userData.originalMaterials = new Map();
-                model.traverse((child) => {
-                    if (child.isMesh) {
-                        model.userData.originalMaterials.set(child, child.material.clone());
-                    }
-                });
-            }
-
-            model.traverse((child) => {
-                if (child.isMesh) {
-                    const originalMaterial = model.userData.originalMaterials.get(child);
-
-                    switch (shaderModes[currentShaderMode]) {
-                        case 'Toon':
-                            child.material = new THREE.MeshToonMaterial({
-                                map: originalMaterial.map,
-                                color: originalMaterial.color,
-                                skinning: originalMaterial.skinning
-                            });
-                            break;
-                        case 'Basic':
-                            child.material = new THREE.MeshBasicMaterial({
-                                wireframe: true,
-                                color: originalMaterial.color,
-                                skinning: originalMaterial.skinning
-                            });
-                            break;
-                        case 'Standard':
-                            child.material = originalMaterial.clone();
-                            break;
-                    }
-
-                    if (child.skeleton) {
-                        child.material.skinning = true;
-                    }
-                }
-            });
-        }
-
-        function toggleLights() {
-            scene.traverse((child) => {
-                if (child.isLight) {
-                    child.visible = !child.visible;
-                }
-            });
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            const delta = clock.getDelta();
-            if (mixer && isPlaying) {
-                mixer.update(delta);
-                updateTimeline();
-            }
-            controls.update();
-            renderer.render(scene, camera);
-        }
-
-        init().catch(console.error);
-        animate();
-
-        document.getElementById('file-input').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const url = URL.createObjectURL(file);
-                loadModel(url);
-            }
-        });
-        document.getElementById('wireframe-btn').addEventListener('click', toggleWireframe);
-        document.getElementById('bones-btn').addEventListener('click', toggleBones);
-        document.getElementById('shaders-btn').addEventListener('click', cycleShaders);
-        document.getElementById('lights-btn').addEventListener('click', toggleLights);
-        document.getElementById('play-pause-btn').addEventListener('click', togglePlayPause);
-        document.getElementById('timeline').addEventListener('input', (e) => {
-            if (!currentAnimation || !mixer) return;
-
-            const time = (e.target.value / 100) * currentAnimation._clip.duration;
-            mixer.setTime(time);
-            isPlaying = false;
-            document.getElementById('play-pause-btn').textContent = 'Play';
-            updateTimeline();
-        });
-
-        document.getElementById('timeline').addEventListener('change', (e) => {
-            if (!currentAnimation || !mixer) return;
-            if (isPlaying) {
-                currentAnimation.play();
-            }
-        });
-        document.getElementById('embed-btn').addEventListener('click', showEmbedCode);
-        document.getElementById('close-embed-dialog').addEventListener('click', () => {
-            document.getElementById('embed-dialog').style.display = 'none';
-        });
-
-        function showEmbedCode() {
-            const currentUrl = window.location.href;
-            const embedCode = `<iframe 
-    src="${currentUrl}" 
-    style="width: 100%; height: 600px; border: none;" 
-    allowfullscreen>
-</iframe>`;
-
-            const dialog = document.getElementById('embed-dialog');
-            const textarea = document.getElementById('embed-code');
-            textarea.value = embedCode;
-            dialog.style.display = 'block';
-
-            // Select the code for easy copying
-            textarea.select();
-            textarea.setSelectionRange(0, 99999);
-        }
-    </script>
+  </div>
+
+  <footer style="text-align: center; padding: 2rem; background: #ff4411; color: white;">
+    <p>© 2024 F1dg3t - Free 3D Model Embedding Platform</p>
+  </footer>
 </body>
 
 </html>
