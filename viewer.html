@@ -5,6 +5,16 @@
         <link rel="icon" type="image/x-icon" href="img/favicon.png">
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta content="GLB | [modelName]" property="og:title" />
+        <meta content="Share your 3D creations with the world using our powerful, easy-to-use model viewer. Perfect for artists, designers, and creators looking to showcase their work." property="og:description" />
+        <meta content="model share URL" property="og:url" />
+        <meta content="thumbnail.png" property="og:image" />
+        <meta property="og:image:type" content="image/png">
+        <meta property="og:image:width" content="1024">
+        <meta property="og:image:height" content="1024">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:image:src" content="thumbnail.png">
+        <meta content="#7DBF5E" data-react-helmet="true" name="theme-color" />
         <style>
             body {
     margin: 0; 
@@ -208,6 +218,7 @@
         <button id="lights-btn">Toggle Lights</button>
         <button id="scene-lights-btn">Toggle Scene Lights</button>
         <button id="embed-btn">Get Embed Code</button>
+        <button id="shareButton">Share</button>
     </div>
     <div id="info-panel">
         <h3>Model Info</h3>
@@ -767,6 +778,23 @@
                 alert('Error generating embed code. Please try again.');
             }
         }
+    </script>
+    <script>
+        // Replace [modelName] with actual model name dynamically
+        function updateMeta(modelName, modelURL, thumbnailURL) {
+            document.querySelector("meta[property='og:title']").content = `GLB | ${modelName}`;
+            document.querySelector("meta[property='og:url']").content = modelURL;
+            document.querySelector("meta[property='og:image']").content = thumbnailURL;
+            document.querySelector("meta[name='twitter:image:src']").content = thumbnailURL;
+        }
+
+        document.getElementById("shareButton").addEventListener("click", function() {
+            const modelName = "LoadedModelName.glb"; // Replace this with actual model name from your logic
+            const modelURL = window.location.href; // URL of the loaded model
+            const thumbnailURL = "thumbnail.png"; // Path to generated thumbnail
+            updateMeta(modelName, modelURL, thumbnailURL);
+            alert("Shareable link generated!");
+        });
     </script>
 </body>
 
