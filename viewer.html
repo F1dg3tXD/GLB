@@ -869,7 +869,7 @@
       document.getElementById('load-url-btn').addEventListener('click', () => {
         const url = document.getElementById('url-input').value;
         if (url) {
-          window.location.href = `loader.html?source=${encodeURIComponent(url)}`;
+          window.location.href = `viewer.html?source=${encodeURIComponent(url)}`;
           document.getElementById('load-popup').style.display = 'none'; // Hide the popup after loading
         }
       });
