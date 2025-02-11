@@ -7,940 +7,940 @@
     <link rel="icon" type="image/x-icon" href="img/favicon.png">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      font-family: Arial, sans-serif;
-      background: transparent;
-      color: #fff;
-    }
-
-    .hide-ui #controls,
-    .hide-ui #info-panel,
-    .hide-ui #model-list,
-    .hide-ui #animation-controls {
-      display: none !important;
-    }
-
-    #background {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      background-image: url('https://raw.githubusercontent.com/F1dg3tXD/GLB/d8d7739aeb8d9ba8db0d892698550cceedd83741/img/background.png');
-      background-size: auto;
-      background-position: center;
-      background-repeat: repeat;
-      opacity: 1.0;
-    }
-
-    #canvas {
-      width: 100%;
-      height: 100%;
-    }
-
-    #controls {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(0, 0, 0, 0.7);
-      padding: 10px;
-      border-radius: 5px;
-      z-index: 10;
-    }
-
-    #controls button {
-      margin: 5px;
-      padding: 5px 10px;
-      background: #ff4411;
-      color: white;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-
-    #controls button:hover {
-      background: #e63d0f;
-    }
-
-    #file-input {
-      display: none;
-    }
-
-    #info-panel {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(0, 0, 0, 0.7);
-      padding: 10px;
-      border-radius: 5px;
-      max-width: 300px;
-      max-height: 80%;
-      overflow-y: auto;
-      z-index: 10;
-    }
-
-    #animations-list button:hover {
-      background: #e63d0f !important;
-    }
-
-    #animations-list h4 {
-      margin-top: 10px;
-      margin-bottom: 5px;
-    }
-
-    #model-list {
-      position: absolute;
-      bottom: 10px;
-      left: 10px;
-      background: rgba(0, 0, 0, 0.7);
-      padding: 10px;
-      border-radius: 5px;
-      max-width: 300px;
-      z-index: 10;
-    }
-
-    #model-list select {
-      width: 100%;
-      margin-top: 5px;
-    }
-
-    #animation-controls {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(0, 0, 0, 0.8);
-      padding: 15px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      z-index: 10;
-    }
-
-    #timeline {
-      flex-grow: 1;
-      margin: 0 10px;
-      height: 20px;
-      cursor: pointer;
-      -webkit-appearance: none;
-      appearance: none;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-      outline: none;
-      transition: background 0.3s;
-    }
-
-    #timeline:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    #timeline::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 20px;
-      height: 20px;
-      background: #ff4411;
-      border-radius: 50%;
-      cursor: pointer;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-      transition: all 0.3s;
-    }
-
-    #timeline::-moz-range-thumb {
-      width: 20px;
-      height: 20px;
-      background: #ff4411;
-      border-radius: 50%;
-      cursor: pointer;
-      border: none;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-      transition: all 0.3s;
-    }
-
-    #timeline::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
-      background: #e63d0f;
-    }
-
-    #timeline::-moz-range-thumb:hover {
-      transform: scale(1.2);
-      background: #e63d0f;
-    }
-
-    #animation-controls button {
-      min-width: 80px;
-      height: 30px;
-      margin: 0;
-      padding: 5px 15px;
-      background: #ff4411;
-      color: white;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-      font-weight: bold;
-      text-transform: uppercase;
-      font-size: 12px;
-      transition: background 0.3s;
-    }
-
-    #animation-controls button:hover {
-      background: #e63d0f;
-    }
-
-    #time-display {
-      min-width: 120px;
-      text-align: right;
-      font-family: monospace;
-      font-size: 14px;
-      color: #ff4411;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 5px 10px;
-      border-radius: 3px;
-      margin-left: auto;
-    }
-
-    .embed-dialog {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.95);
-      padding: 20px;
-      border-radius: 5px;
-      z-index: 1000;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-      display: none;
-    }
-
-    .embed-dialog textarea {
-      width: 100%;
-      min-width: 300px;
-      height: 100px;
-      margin: 10px 0;
-      padding: 10px;
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-      border: 1px solid #ff4411;
-      border-radius: 3px;
-    }
-
-    .embed-dialog .close-btn {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      background: none;
-      border: none;
-      color: #ff4411;
-      cursor: pointer;
-      font-size: 20px;
-    }
-
-    .load-options {
-      display: none;
-      /* Hidden by default */
-      flex-direction: column;
-      margin-top: 10px;
-      /* Add some space above the options */
-    }
-
-    .load-options input,
-    .load-options button,
-    .load-options p {
-      margin: 5px 0;
-      /* Reduce margin for better spacing */
-    }
-
-    /* Style for the "Load GLB/GLTF" button */
-    #load-button {
-      margin: 5px;
-      padding: 5px 10px;
-      background: #ff4411;
-      color: white;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-      /* Add a pointer cursor on hover */
-    }
-
-    #load-button:hover {
-      background: #e63d0f;
-      /* Darken the background color on hover */
-    }
-
-    /* Style for the popup/modal */
-    .load-popup {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(0, 0, 0, 0.8);
-      /* Semi-transparent background */
-      padding: 20px;
-      border-radius: 5px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      /* Ensure it's on top of other elements */
-      display: none;
-      /* Initially hidden */
-    }
-
-    .load-popup h3 {
-      color: #ff4411;
-      /* A distinct color for the heading */
-      margin-bottom: 10px;
-      /* Space between heading and options */
-    }
-
-    .load-popup label,
-    .load-popup input,
-    .load-popup button,
-    .load-popup p {
-      display: block;
-      /* Ensure each element takes its own line */
-      margin: 5px 0;
-      /* Consistent spacing */
-    }
-
-    .load-popup input[type="file"] {
-      margin-top: 10px;
-      /* Add extra space for the file input */
-    }
-
-    .load-popup button {
-      background: #ff4411;
-      color: white;
-      border: none;
-      border-radius: 3px;
-      padding: 8px 12px;
-      /* Slightly larger button */
-      cursor: pointer;
-      /* Pointer cursor on hover */
-      transition: background-color 0.3s;
-      /* Smooth transition for hover effect */
-    }
-
-    .load-popup button:hover {
-      background-color: #e63d0f;
-      /* Darken background color on hover */
-    }
-
-    .load-popup .close-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: none;
-      border: none;
-      color: #ff4411;
-      cursor: pointer;
-      font-size: 16px;
-      /* Clear close button */
-    }
-  </style>
-</head>
-
-<body>
-  <div id="background"></div>
-  <div id="controls">
-    <button id="load-button">Load GLB/GLTF</button>
-    <button id="wireframe-btn">Toggle Wireframe</button>
-    <button id="bones-btn">Toggle Bones</button>
-    <button id="shaders-btn">Cycle Shaders</button>
-    <button id="lights-btn">Toggle Lights</button>
-    <button id="scene-lights-btn">Toggle Scene Lights</button>
-    <button id="embed-btn">Get Embed Code</button>
-  </div>
-  <div id="info-panel">
-    <h3>Model Info</h3>
-    <div id="animations-list"></div>
-    <div id="materials-list"></div>
-  </div>
-  <div id="model-list"></div>
-  <div id="animation-controls">
-    <button id="play-pause-btn">Play</button>
-    <input type="range" id="timeline" min="0" max="100" value="0" step="0.1">
-    <span id="time-display">0.00 / 0.00</span>
-  </div>
-  <div class="embed-dialog" id="embed-dialog">
-    <button class="close-btn" id="close-embed-dialog">×</button>
-    <h3>Embed Code</h3>
-    <p>Copy and paste this code into your website:</p>
-    <textarea id="embed-code" readonly></textarea>
-  </div>
-  <!-- The Load popup -->
-  <div class="load-popup" id="load-popup">
-    <button class="close-button" id="close-load-popup">&times;</button>
-    <h3>Load GLB/GLTF</h3>
-    <label for="file-input">Load from File:</label>
-    <input type="file" id="file-input" accept=".glb,.gltf">
-    <label for="url-input">Load from URL:</label>
-    <input type="text" id="url-input" placeholder="Enter direct URL">
-    <button id="load-url-btn">Load from URL</button>
-    <p style="font-size: smaller;">Only direct file links can be embedded.</p>
-  </div>
-  <canvas id="canvas"></canvas>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-  <script>
-    let scene, camera, renderer, controls, mixer, clock;
-    let model, wireframeHelper, skeletonHelper;
-    let sceneLights = [],
-      modelLights = [];
-    async function fetchDirectoryListing(url) {
-      try {
-        if (url.includes('github.com') && url.includes('/tree/')) {
-          const apiUrl = url.replace('github.com', 'api.github.com/repos')
-            .replace('/tree/', '/contents/');
-
-          const response = await fetch(apiUrl);
-          const data = await response.json();
-
-          return data
-            .filter(file => file.name.toLowerCase().endsWith('.glb') ||
-              file.name.toLowerCase().endsWith('.gltf'))
-            .map(file => ({
-              name: file.name,
-              url: file.download_url
-            }));
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        font-family: Arial, sans-serif;
+        background: transparent;
+        color: #fff;
+      }
+  
+      .hide-ui #controls,
+      .hide-ui #info-panel,
+      .hide-ui #model-list,
+      .hide-ui #animation-controls {
+        display: none !important;
+      }
+  
+      #background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background-image: url('https://raw.githubusercontent.com/F1dg3tXD/GLB/d8d7739aeb8d9ba8db0d892698550cceedd83741/img/background.png');
+        background-size: auto;
+        background-position: center;
+        background-repeat: repeat;
+        opacity: 1.0;
+      }
+  
+      #canvas {
+        width: 100%;
+        height: 100%;
+      }
+  
+      #controls {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 10px;
+        border-radius: 5px;
+        z-index: 10;
+      }
+  
+      #controls button {
+        margin: 5px;
+        padding: 5px 10px;
+        background: #ff4411;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+  
+      #controls button:hover {
+        background: #e63d0f;
+      }
+  
+      #file-input {
+        display: none;
+      }
+  
+      #info-panel {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 10px;
+        border-radius: 5px;
+        max-width: 300px;
+        max-height: 80%;
+        overflow-y: auto;
+        z-index: 10;
+      }
+  
+      #animations-list button:hover {
+        background: #e63d0f !important;
+      }
+  
+      #animations-list h4 {
+        margin-top: 10px;
+        margin-bottom: 5px;
+      }
+  
+      #model-list {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.7);
+        padding: 10px;
+        border-radius: 5px;
+        max-width: 300px;
+        z-index: 10;
+      }
+  
+      #model-list select {
+        width: 100%;
+        margin-top: 5px;
+      }
+  
+      #animation-controls {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        z-index: 10;
+      }
+  
+      #timeline {
+        flex-grow: 1;
+        margin: 0 10px;
+        height: 20px;
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        outline: none;
+        transition: background 0.3s;
+      }
+  
+      #timeline:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+  
+      #timeline::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        background: #ff4411;
+        border-radius: 50%;
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s;
+      }
+  
+      #timeline::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        background: #ff4411;
+        border-radius: 50%;
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s;
+      }
+  
+      #timeline::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+        background: #e63d0f;
+      }
+  
+      #timeline::-moz-range-thumb:hover {
+        transform: scale(1.2);
+        background: #e63d0f;
+      }
+  
+      #animation-controls button {
+        min-width: 80px;
+        height: 30px;
+        margin: 0;
+        padding: 5px 15px;
+        background: #ff4411;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 12px;
+        transition: background 0.3s;
+      }
+  
+      #animation-controls button:hover {
+        background: #e63d0f;
+      }
+  
+      #time-display {
+        min-width: 120px;
+        text-align: right;
+        font-family: monospace;
+        font-size: 14px;
+        color: #ff4411;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 5px 10px;
+        border-radius: 3px;
+        margin-left: auto;
+      }
+  
+      .embed-dialog {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.95);
+        padding: 20px;
+        border-radius: 5px;
+        z-index: 1000;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        display: none;
+      }
+  
+      .embed-dialog textarea {
+        width: 100%;
+        min-width: 300px;
+        height: 100px;
+        margin: 10px 0;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border: 1px solid #ff4411;
+        border-radius: 3px;
+      }
+  
+      .embed-dialog .close-btn {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background: none;
+        border: none;
+        color: #ff4411;
+        cursor: pointer;
+        font-size: 20px;
+      }
+  
+      .load-options {
+        display: none;
+        /* Hidden by default */
+        flex-direction: column;
+        margin-top: 10px;
+        /* Add some space above the options */
+      }
+  
+      .load-options input,
+      .load-options button,
+      .load-options p {
+        margin: 5px 0;
+        /* Reduce margin for better spacing */
+      }
+  
+      /* Style for the "Load GLB/GLTF" button */
+      #load-button {
+        margin: 5px;
+        padding: 5px 10px;
+        background: #ff4411;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        /* Add a pointer cursor on hover */
+      }
+  
+      #load-button:hover {
+        background: #e63d0f;
+        /* Darken the background color on hover */
+      }
+  
+      /* Style for the popup/modal */
+      .load-popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(0, 0, 0, 0.8);
+        /* Semi-transparent background */
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        /* Ensure it's on top of other elements */
+        display: none;
+        /* Initially hidden */
+      }
+  
+      .load-popup h3 {
+        color: #ff4411;
+        /* A distinct color for the heading */
+        margin-bottom: 10px;
+        /* Space between heading and options */
+      }
+  
+      .load-popup label,
+      .load-popup input,
+      .load-popup button,
+      .load-popup p {
+        display: block;
+        /* Ensure each element takes its own line */
+        margin: 5px 0;
+        /* Consistent spacing */
+      }
+  
+      .load-popup input[type="file"] {
+        margin-top: 10px;
+        /* Add extra space for the file input */
+      }
+  
+      .load-popup button {
+        background: #ff4411;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        padding: 8px 12px;
+        /* Slightly larger button */
+        cursor: pointer;
+        /* Pointer cursor on hover */
+        transition: background-color 0.3s;
+        /* Smooth transition for hover effect */
+      }
+  
+      .load-popup button:hover {
+        background-color: #e63d0f;
+        /* Darken background color on hover */
+      }
+  
+      .load-popup .close-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        color: #ff4411;
+        cursor: pointer;
+        font-size: 16px;
+        /* Clear close button */
+      }
+    </style>
+  </head>
+  
+  <body>
+    <div id="background"></div>
+    <div id="controls">
+      <button id="load-button">Load GLB/GLTF</button>
+      <button id="wireframe-btn">Toggle Wireframe</button>
+      <button id="bones-btn">Toggle Bones</button>
+      <button id="shaders-btn">Cycle Shaders</button>
+      <button id="lights-btn">Toggle Lights</button>
+      <button id="scene-lights-btn">Toggle Scene Lights</button>
+      <button id="embed-btn">Get Embed Code</button>
+    </div>
+    <div id="info-panel">
+      <h3>Model Info</h3>
+      <div id="animations-list"></div>
+      <div id="materials-list"></div>
+    </div>
+    <div id="model-list"></div>
+    <div id="animation-controls">
+      <button id="play-pause-btn">Play</button>
+      <input type="range" id="timeline" min="0" max="100" value="0" step="0.1">
+      <span id="time-display">0.00 / 0.00</span>
+    </div>
+    <div class="embed-dialog" id="embed-dialog">
+      <button class="close-btn" id="close-embed-dialog">×</button>
+      <h3>Embed Code</h3>
+      <p>Copy and paste this code into your website:</p>
+      <textarea id="embed-code" readonly></textarea>
+    </div>
+    <!-- The Load popup -->
+    <div class="load-popup" id="load-popup">
+      <button class="close-button" id="close-load-popup">&times;</button>
+      <h3>Load GLB/GLTF</h3>
+      <label for="file-input">Load from File:</label>
+      <input type="file" id="file-input" accept=".glb,.gltf">
+      <label for="url-input">Load from URL:</label>
+      <input type="text" id="url-input" placeholder="Enter direct URL">
+      <button id="load-url-btn">Load from URL</button>
+      <p style="font-size: smaller;">Only direct file links can be embedded.</p>
+    </div>
+    <canvas id="canvas"></canvas>
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script>
+      let scene, camera, renderer, controls, mixer, clock;
+      let model, wireframeHelper, skeletonHelper;
+      let sceneLights = [],
+        modelLights = [];
+      async function fetchDirectoryListing(url) {
+        try {
+          if (url.includes('github.com') && url.includes('/tree/')) {
+            const apiUrl = url.replace('github.com', 'api.github.com/repos')
+              .replace('/tree/', '/contents/');
+  
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+  
+            return data
+              .filter(file => file.name.toLowerCase().endsWith('.glb') ||
+                file.name.toLowerCase().endsWith('.gltf'))
+              .map(file => ({
+                name: file.name,
+                url: file.download_url
+              }));
+          }
+  
+          const response = await fetch(url);
+          const text = await response.text();
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(text, 'text/html');
+          const links = Array.from(doc.querySelectorAll('a'));
+          return links
+            .map(link => link.href)
+            .filter(href => href.toLowerCase().endsWith('.glb') ||
+              href.toLowerCase().endsWith('.gltf'))
+            .map(href => {
+              const url = new URL(href);
+              return {
+                name: url.pathname.split('/').pop(),
+                url: href
+              };
+            });
+        } catch (error) {
+          console.error('Error fetching directory:', error);
+          return [];
         }
-
-        const response = await fetch(url);
-        const text = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(text, 'text/html');
-        const links = Array.from(doc.querySelectorAll('a'));
-        return links
-          .map(link => link.href)
-          .filter(href => href.toLowerCase().endsWith('.glb') ||
-            href.toLowerCase().endsWith('.gltf'))
-          .map(href => {
-            const url = new URL(href);
-            return {
-              name: url.pathname.split('/').pop(),
-              url: href
-            };
-          });
-      } catch (error) {
-        console.error('Error fetching directory:', error);
-        return [];
       }
-    }
-    function checkAndFixUrl() {
-      const path = window.location.pathname;
-      if (path.match(/^\/https?:\/\//)) {
-        const correctedUrl = window.location.origin +
-          '/?source=' +
-          path.substring(1);
-        window.location.href = correctedUrl;
-        return true;
+      function checkAndFixUrl() {
+        const path = window.location.pathname;
+        if (path.match(/^\/https?:\/\//)) {
+          const correctedUrl = window.location.origin +
+            '/?source=' +
+            path.substring(1);
+          window.location.href = correctedUrl;
+          return true;
+        }
+        return false;
       }
-      return false;
-    }
-    let animations = [],
-      materials = [];
-    let currentShaderMode = 0;
-    const shaderModes = ['Standard', 'Toon', 'Basic'];
-    const defaultModelUrl = '';
-    let currentAnimation = null;
-    let isPlaying = false;
-
-    async function checkUrlParameters() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const modelSource = urlParams.get('source');
-
-      if (modelSource) {
-        let modelUrl = modelSource;
-
-        if (modelUrl.includes('github.com')) {
-          if (modelUrl.includes('/tree/')) {
+      let animations = [],
+        materials = [];
+      let currentShaderMode = 0;
+      const shaderModes = ['Standard', 'Toon', 'Basic'];
+      const defaultModelUrl = '';
+      let currentAnimation = null;
+      let isPlaying = false;
+  
+      async function checkUrlParameters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const modelSource = urlParams.get('source');
+  
+        if (modelSource) {
+          let modelUrl = modelSource;
+  
+          if (modelUrl.includes('github.com')) {
+            if (modelUrl.includes('/tree/')) {
+              const models = await fetchDirectoryListing(modelUrl);
+              if (models.length > 0) {
+                displayModelList(models);
+                return true;
+              }
+            } else if (modelUrl.includes('/blob/')) {
+              modelUrl = modelUrl.replace('github.com', 'raw.githubusercontent.com')
+                .replace('/blob/', '/');
+            }
+          }
+  
+          if (!modelUrl.startsWith('http://') && !modelUrl.startsWith('https://')) {
+            modelUrl = new URL(modelUrl, window.location.href).href;
+          }
+  
+          if (!modelUrl.toLowerCase().endsWith('.glb') &&
+            !modelUrl.toLowerCase().endsWith('.gltf')) {
             const models = await fetchDirectoryListing(modelUrl);
             if (models.length > 0) {
               displayModelList(models);
               return true;
             }
-          } else if (modelUrl.includes('/blob/')) {
-            modelUrl = modelUrl.replace('github.com', 'raw.githubusercontent.com')
-              .replace('/blob/', '/');
           }
+  
+          console.log(`Loading model from URL parameter: ${modelUrl}`);
+          loadModel(modelUrl);
+          document.getElementById('load-button').style.display = 'none';
+          document.getElementById('file-input').disabled = true;
+          document.getElementById('model-list').style.display = 'none';
+          return true;
         }
-
-        if (!modelUrl.startsWith('http://') && !modelUrl.startsWith('https://')) {
-          modelUrl = new URL(modelUrl, window.location.href).href;
-        }
-
-        if (!modelUrl.toLowerCase().endsWith('.glb') &&
-          !modelUrl.toLowerCase().endsWith('.gltf')) {
-          const models = await fetchDirectoryListing(modelUrl);
-          if (models.length > 0) {
-            displayModelList(models);
-            return true;
+  
+        return false;
+      }
+  
+      function displayModelList(models) {
+        const modelList = document.getElementById('model-list');
+        modelList.innerHTML = '<h4>Available Models:</h4>';
+  
+        const select = document.createElement('select');
+        select.innerHTML = '<option value="">Select a model</option>';
+  
+        models.forEach((model) => {
+          const option = document.createElement('option');
+          option.value = model.url;
+          option.textContent = model.name;
+          select.appendChild(option);
+        });
+  
+        select.addEventListener('change', (e) => {
+          if (e.target.value) {
+            loadModel(e.target.value);
           }
+        });
+  
+        modelList.appendChild(select);
+        modelList.style.display = 'block';
+      }
+  
+      async function init() {
+        if (checkAndFixUrl()) return;
+  
+        // Get URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const showUI = urlParams.get('show_UI') !== 'false'; // Default to true if not specified
+  
+        // Apply UI visibility class if needed
+        if (!showUI) {
+          document.body.classList.add('hide-ui');
         }
-
-        console.log(`Loading model from URL parameter: ${modelUrl}`);
-        loadModel(modelUrl);
-        document.getElementById('load-button').style.display = 'none';
-        document.getElementById('file-input').disabled = true;
-        document.getElementById('model-list').style.display = 'none';
-        return true;
-      }
-
-      return false;
-    }
-
-    function displayModelList(models) {
-      const modelList = document.getElementById('model-list');
-      modelList.innerHTML = '<h4>Available Models:</h4>';
-
-      const select = document.createElement('select');
-      select.innerHTML = '<option value="">Select a model</option>';
-
-      models.forEach((model) => {
-        const option = document.createElement('option');
-        option.value = model.url;
-        option.textContent = model.name;
-        select.appendChild(option);
-      });
-
-      select.addEventListener('change', (e) => {
-        if (e.target.value) {
-          loadModel(e.target.value);
+  
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        renderer = new THREE.WebGLRenderer({
+          canvas: document.getElementById('canvas'),
+          antialias: true,
+          alpha: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 0);
+  
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        clock = new THREE.Clock();
+  
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+  
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight.position.set(0, 1, 0);
+        scene.add(directionalLight);
+  
+        sceneLights = [ambientLight, directionalLight];
+        // Use the existing urlParams instead of declaring a new one
+        const lightsEnabled = urlParams.get('lights') !== 'false';
+        sceneLights.forEach(light => light.visible = lightsEnabled);
+  
+        camera.position.z = 5;
+  
+        window.addEventListener('resize', onWindowResize, false);
+  
+        const hasUrlModel = await checkUrlParameters();
+        if (!hasUrlModel) {
+          document.getElementById('load-button').style.display = 'inline-block';
+          document.getElementById('file-input').disabled = false;
         }
-      });
-
-      modelList.appendChild(select);
-      modelList.style.display = 'block';
-    }
-
-    async function init() {
-      if (checkAndFixUrl()) return;
-
-      // Get URL parameters
-      const urlParams = new URLSearchParams(window.location.search);
-      const showUI = urlParams.get('show_UI') !== 'false'; // Default to true if not specified
-
-      // Apply UI visibility class if needed
-      if (!showUI) {
-        document.body.classList.add('hide-ui');
       }
-
-      scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-      renderer = new THREE.WebGLRenderer({
-        canvas: document.getElementById('canvas'),
-        antialias: true,
-        alpha: true
-      });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setClearColor(0x000000, 0);
-
-      controls = new THREE.OrbitControls(camera, renderer.domElement);
-      clock = new THREE.Clock();
-
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-      scene.add(ambientLight);
-
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-      directionalLight.position.set(0, 1, 0);
-      scene.add(directionalLight);
-
-      sceneLights = [ambientLight, directionalLight];
-      // Use the existing urlParams instead of declaring a new one
-      const lightsEnabled = urlParams.get('lights') !== 'false';
-      sceneLights.forEach(light => light.visible = lightsEnabled);
-
-      camera.position.z = 5;
-
-      window.addEventListener('resize', onWindowResize, false);
-
-      const hasUrlModel = await checkUrlParameters();
-      if (!hasUrlModel) {
-        document.getElementById('load-button').style.display = 'inline-block';
-        document.getElementById('file-input').disabled = false;
+  
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
       }
-    }
-
-    function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    function loadModel(url) {
-      const loader = new THREE.GLTFLoader();
-      loader.load(url, (gltf) => {
-        if (model) scene.remove(model);
-        if (wireframeHelper) scene.remove(wireframeHelper);
-        if (skeletonHelper) scene.remove(skeletonHelper);
-
-        model = gltf.scene;
-        scene.add(model);
-
-        modelLights = [];
-        let hasModelLights = false;
-        model.traverse((child) => {
-          if (child.isLight) {
-            hasModelLights = true;
-            modelLights.push(child);
+  
+      function loadModel(url) {
+        const loader = new THREE.GLTFLoader();
+        loader.load(url, (gltf) => {
+          if (model) scene.remove(model);
+          if (wireframeHelper) scene.remove(wireframeHelper);
+          if (skeletonHelper) scene.remove(skeletonHelper);
+  
+          model = gltf.scene;
+          scene.add(model);
+  
+          modelLights = [];
+          let hasModelLights = false;
+          model.traverse((child) => {
+            if (child.isLight) {
+              hasModelLights = true;
+              modelLights.push(child);
+              const urlParams = new URLSearchParams(window.location.search);
+              const sceneLightsEnabled = urlParams.get('sceneLights') !== 'false';
+              child.visible = sceneLightsEnabled;
+            }
+          });
+  
+          animations = gltf.animations;
+          if (animations.length) {
+            mixer = new THREE.AnimationMixer(model);
             const urlParams = new URLSearchParams(window.location.search);
-            const sceneLightsEnabled = urlParams.get('sceneLights') !== 'false';
-            child.visible = sceneLightsEnabled;
+            const startAnim = parseInt(urlParams.get('animation')) || 0;
+            if (startAnim >= 0 && startAnim < animations.length) {
+              playAnimation(startAnim);
+            } else if (animations.length > 0) {
+              playAnimation(0);
+            }
           }
-        });
-
-        animations = gltf.animations;
-        if (animations.length) {
-          mixer = new THREE.AnimationMixer(model);
-          const urlParams = new URLSearchParams(window.location.search);
-          const startAnim = parseInt(urlParams.get('animation')) || 0;
-          if (startAnim >= 0 && startAnim < animations.length) {
-            playAnimation(startAnim);
-          } else if (animations.length > 0) {
-            playAnimation(0);
-          }
-        }
-
-        materials = [];
-        model.traverse((child) => {
-          if (child.isMesh && child.material) {
-            materials.push(child.material);
-          }
-        });
-        updateMaterialsList();
-
-        let meshForWireframe;
-        model.traverse((child) => {
-          if (child.isMesh && !meshForWireframe) {
-            meshForWireframe = child;
-          }
-        });
-
-        if (meshForWireframe) {
-          const wireframeGeometry = new THREE.WireframeGeometry(meshForWireframe.geometry);
-          const wireframeMaterial = new THREE.LineBasicMaterial({
-            color: 0xffffff,
-            depthTest: false
+  
+          materials = [];
+          model.traverse((child) => {
+            if (child.isMesh && child.material) {
+              materials.push(child.material);
+            }
           });
-          wireframeHelper = new THREE.LineSegments(wireframeGeometry, wireframeMaterial);
-          wireframeHelper.visible = false;
-          model.add(wireframeHelper);
-        }
-
-        skeletonHelper = new THREE.SkeletonHelper(model);
-        skeletonHelper.visible = false;
-        scene.add(skeletonHelper);
-
-        const box = new THREE.Box3().setFromObject(model);
-        const center = box.getCenter(new THREE.Vector3());
-        const size = box.getSize(new THREE.Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 5 / maxDim;
-
-        model.scale.setScalar(scale);
-        model.position.sub(center.multiplyScalar(scale));
-
-        const fov = camera.fov * (Math.PI / 180);
-        const distance = Math.abs(maxDim / Math.sin(fov / 2)) * 1.5;
-
-        camera.position.set(0, 0, distance);
-        camera.lookAt(new THREE.Vector3(0, 0, 0));
-
-        controls.target.copy(new THREE.Vector3(0, 0, 0));
-        controls.maxDistance = distance * 3;
-        controls.minDistance = distance * 0.1;
-        controls.update();
-
-        camera.lookAt(model.position);
-      }, undefined, function (error) {
-        console.error(error);
-      });
-    }
-
-    function updateAnimationsList() {
-      const animationsList = document.getElementById('animations-list');
-      animationsList.innerHTML = '<h4>Animations:</h4>';
-      if (animations.length === 0) {
-        animationsList.innerHTML += '<p>No animations found</p>';
-      } else {
-        const list = document.createElement('ul');
-        list.style.listStyle = 'none';
-        list.style.padding = '0';
-
-        animations.forEach((anim, index) => {
-          const listItem = document.createElement('li');
-          const button = document.createElement('button');
-          button.textContent = anim.name || `Animation ${index + 1}`;
-          button.style.width = '100%';
-          button.style.margin = '2px 0';
-          button.style.textAlign = 'left';
-          button.style.padding = '5px';
-          button.style.background = currentAnimation &&
-            currentAnimation._clip === anim ?
-            '#ff4411' : 'rgba(255,255,255,0.1)';
-          button.style.border = 'none';
-          button.style.color = '#fff';
-          button.style.cursor = 'pointer';
-
-          button.addEventListener('click', () => {
-            playAnimation(index);
-            // Update all button backgrounds
-            list.querySelectorAll('button').forEach((btn, i) => {
-              btn.style.background = i === index ? '#ff4411' : 'rgba(255,255,255,0.1)';
+          updateMaterialsList();
+  
+          let meshForWireframe;
+          model.traverse((child) => {
+            if (child.isMesh && !meshForWireframe) {
+              meshForWireframe = child;
+            }
+          });
+  
+          if (meshForWireframe) {
+            const wireframeGeometry = new THREE.WireframeGeometry(meshForWireframe.geometry);
+            const wireframeMaterial = new THREE.LineBasicMaterial({
+              color: 0xffffff,
+              depthTest: false
             });
+            wireframeHelper = new THREE.LineSegments(wireframeGeometry, wireframeMaterial);
+            wireframeHelper.visible = false;
+            model.add(wireframeHelper);
+          }
+  
+          skeletonHelper = new THREE.SkeletonHelper(model);
+          skeletonHelper.visible = false;
+          scene.add(skeletonHelper);
+  
+          const box = new THREE.Box3().setFromObject(model);
+          const center = box.getCenter(new THREE.Vector3());
+          const size = box.getSize(new THREE.Vector3());
+          const maxDim = Math.max(size.x, size.y, size.z);
+          const scale = 5 / maxDim;
+  
+          model.scale.setScalar(scale);
+          model.position.sub(center.multiplyScalar(scale));
+  
+          const fov = camera.fov * (Math.PI / 180);
+          const distance = Math.abs(maxDim / Math.sin(fov / 2)) * 1.5;
+  
+          camera.position.set(0, 0, distance);
+          camera.lookAt(new THREE.Vector3(0, 0, 0));
+  
+          controls.target.copy(new THREE.Vector3(0, 0, 0));
+          controls.maxDistance = distance * 3;
+          controls.minDistance = distance * 0.1;
+          controls.update();
+  
+          camera.lookAt(model.position);
+        }, undefined, function (error) {
+          console.error(error);
+        });
+      }
+  
+      function updateAnimationsList() {
+        const animationsList = document.getElementById('animations-list');
+        animationsList.innerHTML = '<h4>Animations:</h4>';
+        if (animations.length === 0) {
+          animationsList.innerHTML += '<p>No animations found</p>';
+        } else {
+          const list = document.createElement('ul');
+          list.style.listStyle = 'none';
+          list.style.padding = '0';
+  
+          animations.forEach((anim, index) => {
+            const listItem = document.createElement('li');
+            const button = document.createElement('button');
+            button.textContent = anim.name || `Animation ${index + 1}`;
+            button.style.width = '100%';
+            button.style.margin = '2px 0';
+            button.style.textAlign = 'left';
+            button.style.padding = '5px';
+            button.style.background = currentAnimation &&
+              currentAnimation._clip === anim ?
+              '#ff4411' : 'rgba(255,255,255,0.1)';
+            button.style.border = 'none';
+            button.style.color = '#fff';
+            button.style.cursor = 'pointer';
+  
+            button.addEventListener('click', () => {
+              playAnimation(index);
+              // Update all button backgrounds
+              list.querySelectorAll('button').forEach((btn, i) => {
+                btn.style.background = i === index ? '#ff4411' : 'rgba(255,255,255,0.1)';
+              });
+            });
+  
+            listItem.appendChild(button);
+            list.appendChild(listItem);
           });
-
-          listItem.appendChild(button);
-          list.appendChild(listItem);
-        });
-        animationsList.appendChild(list);
+          animationsList.appendChild(list);
+        }
       }
-    }
-
-    function updateMaterialsList() {
-      const materialsList = document.getElementById('materials-list');
-      materialsList.innerHTML = '<h4>Materials:</h4>';
-      if (materials.length === 0) {
-        materialsList.innerHTML += '<p>No materials found</p>';
-      } else {
-        const ul = document.createElement('ul');
-        materials.forEach((material, index) => {
-          const li = document.createElement('li');
-          li.textContent = `Material ${index + 1}: ${material.type}`;
-          ul.appendChild(li);
-        });
-        materialsList.appendChild(ul);
+  
+      function updateMaterialsList() {
+        const materialsList = document.getElementById('materials-list');
+        materialsList.innerHTML = '<h4>Materials:</h4>';
+        if (materials.length === 0) {
+          materialsList.innerHTML += '<p>No materials found</p>';
+        } else {
+          const ul = document.createElement('ul');
+          materials.forEach((material, index) => {
+            const li = document.createElement('li');
+            li.textContent = `Material ${index + 1}: ${material.type}`;
+            ul.appendChild(li);
+          });
+          materialsList.appendChild(ul);
+        }
       }
-    }
-
-    function playAnimation(index) {
-      if (mixer) {
-        mixer.stopAllAction();
-        currentAnimation = mixer.clipAction(animations[index]);
-        currentAnimation.play();
-        isPlaying = true;
-        document.getElementById('play-pause-btn').textContent = 'Pause';
-
+  
+      function playAnimation(index) {
+        if (mixer) {
+          mixer.stopAllAction();
+          currentAnimation = mixer.clipAction(animations[index]);
+          currentAnimation.play();
+          isPlaying = true;
+          document.getElementById('play-pause-btn').textContent = 'Pause';
+  
+          const timeline = document.getElementById('timeline');
+          timeline.value = 0;
+  
+          const duration = animations[index].duration;
+          document.getElementById('time-display').textContent =
+            `0.00 / ${duration.toFixed(2)}`;
+  
+          mixer.setTime(0);
+  
+          // Update the animations list to show current selection
+          updateAnimationsList();
+        }
+      }
+  
+      function togglePlayPause() {
+        if (!currentAnimation) return;
+  
+        isPlaying = !isPlaying;
+        if (isPlaying) {
+          currentAnimation.paused = false;
+          document.getElementById('play-pause-btn').textContent = 'Pause';
+        } else {
+          currentAnimation.paused = true;
+          document.getElementById('play-pause-btn').textContent = 'Play';
+        }
+      }
+  
+      function updateTimeline() {
+        if (!currentAnimation || !mixer) return;
+  
+        const action = currentAnimation;
+        const duration = action._clip.duration;
+        const time = mixer.time;
+  
         const timeline = document.getElementById('timeline');
-        timeline.value = 0;
-
-        const duration = animations[index].duration;
+        timeline.value = (time % duration) / duration * 100;
         document.getElementById('time-display').textContent =
-          `0.00 / ${duration.toFixed(2)}`;
-
-        mixer.setTime(0);
-
-        // Update the animations list to show current selection
-        updateAnimationsList();
+          `${(time % duration).toFixed(2)} / ${duration.toFixed(2)}`;
       }
-    }
-
-    function togglePlayPause() {
-      if (!currentAnimation) return;
-
-      isPlaying = !isPlaying;
-      if (isPlaying) {
-        currentAnimation.paused = false;
-        document.getElementById('play-pause-btn').textContent = 'Pause';
-      } else {
-        currentAnimation.paused = true;
-        document.getElementById('play-pause-btn').textContent = 'Play';
+  
+      function toggleWireframe() {
+        if (wireframeHelper) {
+          wireframeHelper.visible = !wireframeHelper.visible;
+        }
       }
-    }
-
-    function updateTimeline() {
-      if (!currentAnimation || !mixer) return;
-
-      const action = currentAnimation;
-      const duration = action._clip.duration;
-      const time = mixer.time;
-
-      const timeline = document.getElementById('timeline');
-      timeline.value = (time % duration) / duration * 100;
-      document.getElementById('time-display').textContent =
-        `${(time % duration).toFixed(2)} / ${duration.toFixed(2)}`;
-    }
-
-    function toggleWireframe() {
-      if (wireframeHelper) {
-        wireframeHelper.visible = !wireframeHelper.visible;
+  
+      function toggleBones() {
+        if (skeletonHelper) {
+          skeletonHelper.visible = !skeletonHelper.visible;
+        }
       }
-    }
-
-    function toggleBones() {
-      if (skeletonHelper) {
-        skeletonHelper.visible = !skeletonHelper.visible;
-      }
-    }
-
-    function cycleShaders() {
-      if (!model) return;
-      currentShaderMode = (currentShaderMode + 1) % shaderModes.length;
-
-      if (!model.userData.originalMaterials) {
-        model.userData.originalMaterials = new Map();
+  
+      function cycleShaders() {
+        if (!model) return;
+        currentShaderMode = (currentShaderMode + 1) % shaderModes.length;
+  
+        if (!model.userData.originalMaterials) {
+          model.userData.originalMaterials = new Map();
+          model.traverse((child) => {
+            if (child.isMesh) {
+              model.userData.originalMaterials.set(child, child.material.clone());
+            }
+          });
+        }
+  
         model.traverse((child) => {
           if (child.isMesh) {
-            model.userData.originalMaterials.set(child, child.material.clone());
+            const originalMaterial = model.userData.originalMaterials.get(child);
+  
+            switch (shaderModes[currentShaderMode]) {
+              case 'Toon':
+                child.material = new THREE.MeshToonMaterial({
+                  map: originalMaterial.map,
+                  color: originalMaterial.color,
+                  skinning: originalMaterial.skinning
+                });
+                break;
+              case 'Basic':
+                child.material = new THREE.MeshBasicMaterial({
+                  wireframe: true,
+                  color: originalMaterial.color,
+                  skinning: originalMaterial.skinning
+                });
+                break;
+              case 'Standard':
+                child.material = originalMaterial.clone();
+                break;
+            }
+  
+            if (child.skeleton) {
+              child.material.skinning = true;
+            }
           }
         });
       }
-
-      model.traverse((child) => {
-        if (child.isMesh) {
-          const originalMaterial = model.userData.originalMaterials.get(child);
-
-          switch (shaderModes[currentShaderMode]) {
-            case 'Toon':
-              child.material = new THREE.MeshToonMaterial({
-                map: originalMaterial.map,
-                color: originalMaterial.color,
-                skinning: originalMaterial.skinning
-              });
-              break;
-            case 'Basic':
-              child.material = new THREE.MeshBasicMaterial({
-                wireframe: true,
-                color: originalMaterial.color,
-                skinning: originalMaterial.skinning
-              });
-              break;
-            case 'Standard':
-              child.material = originalMaterial.clone();
-              break;
-          }
-
-          if (child.skeleton) {
-            child.material.skinning = true;
-          }
+  
+      function toggleLights() {
+        sceneLights.forEach(light => {
+          light.visible = !light.visible;
+        });
+      }
+  
+      function toggleSceneLights() {
+        modelLights.forEach(light => {
+          light.visible = !light.visible;
+        });
+      }
+  
+      function animate() {
+        requestAnimationFrame(animate);
+        const delta = clock.getDelta();
+        if (mixer && isPlaying) {
+          mixer.update(delta);
+          updateTimeline();
+        }
+        controls.update();
+        renderer.render(scene, camera);
+      }
+  
+      init().catch(console.error);
+      animate();
+  
+      // Load Popup Functionality
+      document.getElementById('load-button').addEventListener('click', () => {
+        document.getElementById('load-popup').style.display = 'block';
+      });
+  
+      document.getElementById('close-load-popup').addEventListener('click', () => {
+        document.getElementById('load-popup').style.display = 'none';
+      });
+  
+      document.getElementById('file-input').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const url = URL.createObjectURL(file);
+          loadModel(url);
+          document.getElementById('load-popup').style.display = 'none'; // Hide the popup after loading
         }
       });
-    }
-
-    function toggleLights() {
-      sceneLights.forEach(light => {
-        light.visible = !light.visible;
+  
+      document.getElementById('load-url-btn').addEventListener('click', () => {
+        const url = document.getElementById('url-input').value;
+        if (url) {
+          window.location.href = `?source=${encodeURIComponent(url)}`;
+          document.getElementById('load-popup').style.display = 'none'; // Hide the popup after loading
+        }
       });
-    }
-
-    function toggleSceneLights() {
-      modelLights.forEach(light => {
-        light.visible = !light.visible;
-      });
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      const delta = clock.getDelta();
-      if (mixer && isPlaying) {
-        mixer.update(delta);
+      document.getElementById('wireframe-btn').addEventListener('click', toggleWireframe);
+      document.getElementById('bones-btn').addEventListener('click', toggleBones);
+      document.getElementById('shaders-btn').addEventListener('click', cycleShaders);
+      document.getElementById('lights-btn').addEventListener('click', toggleLights);
+      document.getElementById('scene-lights-btn').addEventListener('click', toggleSceneLights);
+      document.getElementById('play-pause-btn').addEventListener('click', togglePlayPause);
+      document.getElementById('timeline').addEventListener('input', (e) => {
+        if (!currentAnimation || !mixer) return;
+  
+        const time = (e.target.value / 100) * currentAnimation._clip.duration;
+        mixer.setTime(time);
+        isPlaying = false;
+        document.getElementById('play-pause-btn').textContent = 'Play';
         updateTimeline();
-      }
-      controls.update();
-      renderer.render(scene, camera);
-    }
-
-    init().catch(console.error);
-    animate();
-
-    // Load Popup Functionality
-    document.getElementById('load-button').addEventListener('click', () => {
-      document.getElementById('load-popup').style.display = 'block';
-    });
-
-    document.getElementById('close-load-popup').addEventListener('click', () => {
-      document.getElementById('load-popup').style.display = 'none';
-    });
-
-    document.getElementById('file-input').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (file) {
-        const url = URL.createObjectURL(file);
-        loadModel(url);
-        document.getElementById('load-popup').style.display = 'none'; // Hide the popup after loading
-      }
-    });
-
-    document.getElementById('load-url-btn').addEventListener('click', () => {
-      const url = document.getElementById('url-input').value;
-      if (url) {
-        loadModel(url);
-        document.getElementById('load-popup').style.display = 'none'; // Hide the popup after loading
-      }
-    });
-    document.getElementById('wireframe-btn').addEventListener('click', toggleWireframe);
-    document.getElementById('bones-btn').addEventListener('click', toggleBones);
-    document.getElementById('shaders-btn').addEventListener('click', cycleShaders);
-    document.getElementById('lights-btn').addEventListener('click', toggleLights);
-    document.getElementById('scene-lights-btn').addEventListener('click', toggleSceneLights);
-    document.getElementById('play-pause-btn').addEventListener('click', togglePlayPause);
-    document.getElementById('timeline').addEventListener('input', (e) => {
-      if (!currentAnimation || !mixer) return;
-
-      const time = (e.target.value / 100) * currentAnimation._clip.duration;
-      mixer.setTime(time);
-      isPlaying = false;
-      document.getElementById('play-pause-btn').textContent = 'Play';
-      updateTimeline();
-    });
-
-    document.getElementById('timeline').addEventListener('change', (e) => {
-      if (!currentAnimation || !mixer) return;
-      if (isPlaying) {
-        currentAnimation.play();
-      }
-    });
-    document.getElementById('embed-btn').addEventListener('click', showEmbedCode);
-    document.getElementById('close-embed-dialog').addEventListener('click', () => {
-      document.getElementById('embed-dialog').style.display = 'none';
-    });
-
-    function showEmbedCode() {
-      const currentUrl = window.location.href;
-
-      try {
-        const baseUrl = new URL(window.location.origin + window.location.pathname);
-        const urlParams = new URLSearchParams(window.location.search);
-
-        // Set default and current parameters
-        urlParams.set('show_UI', 'true'); // Default to showing UI
-        urlParams.set('lights', sceneLights.some(light => light.visible));
-        urlParams.set('sceneLights', modelLights.some(light => light.visible));
-
-        let currentAnimIndex = 0;
-        if (currentAnimation) {
-          currentAnimIndex = animations.findIndex(anim => anim === currentAnimation._clip);
+      });
+  
+      document.getElementById('timeline').addEventListener('change', (e) => {
+        if (!currentAnimation || !mixer) return;
+        if (isPlaying) {
+          currentAnimation.play();
         }
-        urlParams.set('animation', currentAnimIndex);
-
-        const sourceParam = urlParams.get('source');
-        if (sourceParam) {
-          urlParams.set('source', sourceParam);
+      });
+      document.getElementById('embed-btn').addEventListener('click', showEmbedCode);
+      document.getElementById('close-embed-dialog').addEventListener('click', () => {
+        document.getElementById('embed-dialog').style.display = 'none';
+      });
+  
+      function showEmbedCode() {
+        const currentUrl = window.location.href;
+  
+        try {
+          const baseUrl = new URL(window.location.origin + window.location.pathname);
+          const urlParams = new URLSearchParams(window.location.search);
+  
+          // Set default and current parameters
+          urlParams.set('show_UI', 'true'); // Default to showing UI
+          urlParams.set('lights', sceneLights.some(light => light.visible));
+          urlParams.set('sceneLights', modelLights.some(light => light.visible));
+  
+          let currentAnimIndex = 0;
+          if (currentAnimation) {
+            currentAnimIndex = animations.findIndex(anim => anim === currentAnimation._clip);
+          }
+          urlParams.set('animation', currentAnimIndex);
+  
+          const sourceParam = urlParams.get('source');
+          if (sourceParam) {
+            urlParams.set('source', sourceParam);
+          }
+  
+          baseUrl.search = urlParams.toString();
+  
+          const embedCode = `<iframe 
+      src="${baseUrl.toString()}" 
+      style="width: 100%; height: 600px; border: none;" 
+      allowfullscreen>
+  </iframe>`;
+  
+          const dialog = document.getElementById('embed-dialog');
+          const textarea = document.getElementById('embed-code');
+          textarea.value = embedCode;
+          dialog.style.display = 'block';
+        } catch (error) {
+          console.error('Error generating embed code:', error);
+          alert('Error generating embed code. Please try again.');
         }
-
-        baseUrl.search = urlParams.toString();
-
-        const embedCode = `<iframe 
-    src="${baseUrl.toString()}" 
-    style="width: 100%; height: 600px; border: none;" 
-    allowfullscreen>
-</iframe>`;
-
-        const dialog = document.getElementById('embed-dialog');
-        const textarea = document.getElementById('embed-code');
-        textarea.value = embedCode;
-        dialog.style.display = 'block';
-      } catch (error) {
-        console.error('Error generating embed code:', error);
-        alert('Error generating embed code. Please try again.');
       }
-    }
-  </script>
-</body>
-
-</html>
+    </script>
+  </body>
+  
+  </html>
