@@ -340,6 +340,23 @@
         font-size: 16px;
         /* Clear close button */
       }
+  
+      /* Style the file input label as a button */
+      .file-input-label {
+        background: #ff4411;
+        color: white;
+        border: none;
+        border-radius: 3px;
+        padding: 8px 12px;
+        cursor: pointer;
+        display: inline-block;
+        margin-bottom: 10px;
+        /* Add some spacing below the label */
+      }
+  
+      .file-input-label:hover {
+        background-color: #e63d0f;
+      }
     </style>
   </head>
   
@@ -375,7 +392,7 @@
     <div class="load-popup" id="load-popup">
       <button class="close-button" id="close-load-popup">&times;</button>
       <h3>Load GLB/GLTF</h3>
-      <label for="file-input">Load from File:</label>
+      <label for="file-input" class="file-input-label">Load from File</label>
       <input type="file" id="file-input" accept=".glb,.gltf">
       <label for="url-input">Load from URL:</label>
       <input type="text" id="url-input" placeholder="Enter direct URL">
@@ -869,7 +886,7 @@
       document.getElementById('load-url-btn').addEventListener('click', () => {
         const url = document.getElementById('url-input').value;
         if (url) {
-          window.location.href = `viewer.html?source=${encodeURIComponent(url)}`;
+          window.location.href = `?source=${encodeURIComponent(url)}`;
           document.getElementById('load-popup').style.display = 'none'; // Hide the popup after loading
         }
       });
@@ -916,25 +933,7 @@
           if (currentAnimation) {
             currentAnimIndex = animations.findIndex(anim => anim === currentAnimation._clip);
           }
-          urlParams.set('animation', currentAnimIndex);
-  
-          const sourceParam = urlParams.get('source');
-          if (sourceParam) {
-            urlParams.set('source', sourceParam);
-          }
-  
-          baseUrl.search = urlParams.toString();
-  
-          const embedCode = `<iframe 
-      src="${baseUrl.toString()}" 
-      style="width: 100%; height: 600px; border: none;" 
-      allowfullscreen>
-  </iframe>`;
-  
-          const dialog = document.getElementById('embed-dialog');
-          const textarea = document.getElementById('embed-code');
-          textarea.value = embedCode;
-          dialog.style.display = 'block';
+          
         } catch (error) {
           console.error('Error generating embed code:', error);
           alert('Error generating embed code. Please try again.');
