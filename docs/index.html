@@ -1,0 +1,152 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GLB | Docs</title>
+  <link rel="icon" type="image/x-icon" href="GLBDocs_favicon.png">
+  <link rel="stylesheet" href="style.css">
+  <meta content="GLB | Docs" property="og:title" />
+  <meta content="Documentation and usage guide for the GLB 3D Model Viewer made by F1dg3t." property="og:description" />
+  <meta content="https://f1dg3txd.github.io/GLB/docs" property="og:url" />
+  <meta content="https://f1dg3txd.github.io/GLB/docs/GLBDocs_favicon.png" property="og:image" />
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1024">
+  <meta property="og:image:height" content="1024">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image:src" content="https://f1dg3txd.github.io/GLB/docs/GLBDocs_favicon.png">
+  <meta content="#7DBF5E" data-react-helmet="true" name="theme-color" />  
+</head>
+<body>
+  <header>
+    <img src="glb_favicon.png" alt="GLB Model Viewer Logo" class="logo">
+    <h1>Docs</h1>
+  </header>
+
+  <main>
+    <section id="introduction">
+      <h2>Introduction</h2>
+      <p>Welcome to the GLB Model Viewer, a platform designed to easily view and embed 3D models on the web. This documentation will guide you through uploading, viewing, and embedding your models.</p>
+    </section>
+
+    <section id="uploading">
+      <h2>Uploading Models</h2>
+      <p>You can upload your GLB models directly to the platform for viewing.</p>
+      <ol>
+        <li>Click the "Upload Model" button on the main page.</li>
+        <li>Select your GLB file from your computer.</li>
+        <li>Once the upload is complete, your model will be displayed in the viewer.</li>
+      </ol>
+      <p>Supported file format: GLB</p>
+    </section>
+
+    <section id="url-loading">
+      <h2>Loading Models via URL</h2>
+      <p>Alternatively, you can load models directly using a URL.</p>
+      <ol>
+        <li>Enter the URL of your GLB model into the URL input field.</li>
+        <li>Click the "Load Model" button.</li>
+        <li>Your model will be displayed in the viewer.</li>
+      </ol>
+      <p>Ensure the URL points directly to a GLB file and is publicly accessible.</p>
+    </section>
+
+    <section id="viewer">
+      <h2>Using the Model Viewer</h2>
+      <p>The model viewer provides several tools for interacting with your 3D model:</p>
+      <ul>
+        <li><strong>Orbit Control:</strong> Click and drag to rotate the model.</li>
+        <li><strong>Zoom:</strong> Use the scroll wheel to zoom in and out.</li>
+        <li><strong>Pan:</strong> Hold the shift key and drag to pan the model.</li>
+        <li><strong>Fullscreen:</strong> Click the fullscreen icon to view the model in fullscreen mode.</li>
+      </ul>
+    </section>
+
+    <section id="embedding">
+      <h2>Embedding the Model Viewer</h2>
+      <p>The GLB Model Viewer provides an embed tool to easily integrate the viewer into your own website.</p>
+      <ol>
+        <li>After loading your model (either via upload or URL), click the "Embed" button.</li>
+        <li>A code snippet will be generated.</li>
+        <li>Copy the code snippet and paste it into your website's HTML where you want the viewer to appear.</li>
+      </ol>
+      <p>Example Embed Code:</p>
+      <pre>
+        <code>
+          &lt;iframe src="https://f1dg3txd.github.io/GLB/viewer.html?source=your_model_url.glb" width="640" height="480"&gt;&lt;/iframe&gt;
+        </code>
+      </pre>
+      <p>Customize the <code>width</code> and <code>height</code> attributes to adjust the size of the embedded viewer.</p>
+    </section>
+
+<section id="URL Parameters">
+  <h2>URL Parameters</h2>
+  <p>The following URL parameters are available for customizing the viewer:</p>
+  <table>
+    <thead>
+      <tr>
+        <th>Parameter</th>
+        <th>Description</th>
+        <th>Data Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>?source</code></td>
+        <td>URL of the GLB model to load.</td>
+        <td>string</td>
+      </tr>
+      <tr>
+        <td><code>show_UI</code></td>
+        <td>Show or hide the user interface.</td>
+        <td>boolean</td>
+      </tr>
+      <tr>
+        <td><code>lights</code></td>
+        <td>Enable or disable scene lights.</td>
+        <td>boolean</td>
+      </tr>
+      <tr>
+        <td><code>sceneLights</code></td>
+        <td>Enable or disable scene lights.</td>
+        <td>boolean</td>
+      </tr>
+      <tr>
+        <td><code>animation</code></td>
+        <td>Index of the animation to play.</td>
+        <td>integer</td>
+      </tr>
+      <tr>
+        <td><code>bones</code></td>
+        <td>Show or hide bones.</td>
+        <td>boolean</td>
+      </tr>
+      <tr>
+        <td><code>camera</code></td>
+        <td>Position the camera in the scene.</td>
+        <td>float array</td>
+      </tr>
+      <tr>
+        <td><code>target</code></td>
+        <td>Position the view target of the camera.</td>
+        <td>float array</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>Example URL with URL parameters:</p>
+  <pre>
+    <code>
+      https://f1dg3txd.github.io/GLB/viewer.html?source=your_model_url.glb&show_UI=true&lights=true&sceneLights=false&bones=true&animation=3
+    </code>
+  </pre>
+</section>
+
+    <section id="support">
+      <h2>Support</h2>
+      <p>For questions or assistance, please view <a href="https://github.com/F1dg3tXD/GLB/issues">GitHub Issues</a>.</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2024 F1dg3t - GLB | Free 3D Model Embedding Platform</p>
+  </footer>
+</html>
