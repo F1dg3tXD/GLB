@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GLB | Viewer</title>
+    <link rel="icon" type="image/x-icon" href="img/favicon.png">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="background"></div>
+    <div id="controls">
+        <button id="load-button">Load GLB/GLTF</button>
+        <button id="wireframe-btn">Toggle Wireframe</button>
+        <button id="bones-btn">Toggle Bones</button>
+        <button id="shaders-btn">Cycle Shaders</button>
+        <button id="lights-btn">Toggle Lights</button>
+        <button id="scene-lights-btn">Toggle Scene Lights</button>
+        <button id="embed-btn">Get Embed Code</button>
+    </div>
+    <div id="info-panel">
+        <h3>Model Info</h3>
+        <div id="animations-list"></div>
+        <div id="materials-list"></div>
+        <div id="material-controls">
+            <h4>Material Options:</h4>
+            <select id="material-select"></select>
+            <div>
+                <label for="alpha-test-input">Alpha Mode:</label>
+                <select id="alpha-test-input"></select>
+            </div>
+        </div>
+    </div>
+    <div id="model-list"></div>
+    <div id="animation-controls">
+        <button id="play-pause-btn">Play</button>
+        <input type="range" id="timeline" min="0" max="100" value="0" step="0.1">
+        <span id="time-display">0.00 / 0.00</span>
+    </div>
+    <div class="embed-dialog" id="embed-dialog">
+        <button class="close-btn" id="close-embed-dialog">×</button>
+        <h3>Embed Code</h3>
+        <p>Copy and paste this code into your website:</p>
+        <textarea id="embed-code" readonly></textarea>
+    </div>
+    <div class="load-popup" id="load-popup">
+        <button class="close-button" id="close-load-popup">&times;</button>
+        <h3>Load GLB/GLTF</h3>
+        <label for="file-input" class="file-input-label">Load from File</label>
+        <input type="file" id="file-input" accept=".glb,.gltf">
+        <label for="url-input">Load from URL:</label>
+        <input type="text" id="url-input" placeholder="Enter direct URL">
+        <button id="load-url-btn">Load from URL</button>
+        <p style="font-size: smaller;">Only direct file links can be embedded.</p>
+    </div>
+    <canvas id="canvas"></canvas>
+    <div id="background-changer"></div>
+    <div class="background-popup" id="background-popup">
+        <button class="close-button" id="close-background-popup">&times;</button>
+        <h3>Change Background</h3>
+        <label for="background-color-input">Background Color:</label>
+        <input type="color" id="background-color-input" value="#FFFFFF">
+        <label for="background-url-input">Background URL:</label>
+        <input type="text" id="background-url-input" placeholder="Enter image URL">
+        <button id="apply-background-btn">Apply Background</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="modelLoader.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
